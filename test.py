@@ -32,6 +32,8 @@ if __name__ == '__main__':
     print q.add(cheat = True)
     print q.grasp('SELECT * FROM lab WHERE name === "Hi"').find(cheat = True)
     print q.limit(10).query('SELECT * FROM lab WHERE name === "Hi" LIMIT 15, 25')
+    print q.limit(10).query('SELECT * FROM lab WHERE name === "Hi"')
+    print q.limit(10).order('ID DESC').query('SELECT * FROM lab WHERE name === "Hi" ORDER BY AGE ASC')
     print q.table('selected_table') \
             .field('name, age, id') \
             .where('name = "tom"') \
