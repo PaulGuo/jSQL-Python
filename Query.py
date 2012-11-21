@@ -19,18 +19,6 @@ do_dict = {
     "join": "__join",
 }
 
-statement_dict = {
-    "where": "__condition",
-    "table": "__table_name",
-    "limit": "__limit",
-    "order": "__order",
-    "field": "__field",
-    "data": "__data",
-    "group": "__group",
-    "having": "__having",
-    "join": "__join",
-}
-
 class Query(object):
     def __init__(self, table_name = None, db = None):
         if not table_name == None:
