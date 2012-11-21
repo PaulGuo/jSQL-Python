@@ -5,25 +5,6 @@
 # Do have a faith in what you're doing.
 # Make your life a story worth telling.
 
-'''
-> FOR TEST
-------------------------------------
-class Db(object):
-    def __init__(self):
-        self.get = self._get
-        self.query = self._query
-        self.execute = self._execute 
-
-    def _get(self, s):
-        print('GET: %s' % s)
-
-    def _query(self, s):
-        print('QUERY: %s' % s)
-
-    def _execute(self, s):
-        print('EXECUTE: %s' % s)
-'''
-
 import re
 
 do_dict = {
@@ -47,7 +28,6 @@ class Query(object):
             self.db = db
 
         self.__reset()
-        #self.db = Db()
         
     def __reset(self):
         self.__cluster = []
@@ -67,7 +47,6 @@ class Query(object):
     def __do(self, name, value):
         self.__protected[do_dict[name]] = value
         self.__tracker(name)
-        # print("GRASP %s: %s" % (name, value))
 
     def __sqlfix(self, sql):
         sql = re.sub(r"(?<!%)%(?!%)", "%%", sql)

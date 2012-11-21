@@ -1,5 +1,9 @@
 #!/usr/bin/env python
 # coding=utf-8
+#
+# Copyright 2012 Guokai (benben.cc)
+# Do have a faith in what you're doing.
+# Make your life a story worth telling.
 
 from Query import *
 
