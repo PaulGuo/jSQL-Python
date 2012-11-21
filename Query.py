@@ -19,6 +19,18 @@ do_dict = {
     "join": "__join",
 }
 
+statement_dict = {
+    "where": "__condition",
+    "table": "__table_name",
+    "limit": "__limit",
+    "order": "__order",
+    "field": "__field",
+    "data": "__data",
+    "group": "__group",
+    "having": "__having",
+    "join": "__join",
+}
+
 class Query(object):
     def __init__(self, table_name = None, db = None):
         if not table_name == None:
@@ -55,6 +67,48 @@ class Query(object):
     def __valuefix(self, value):
         value = re.sub(r"\'", "''", value) if type(value) == type("string") or type(value) == type(u"unicode") else value
         return value
+
+    def __sqlbuild(self, sql = '', queue = []):
+        for statement in queue:
+            if(self.__check("join") and statement == "join"):
+                sql = sql + " %s" % self.__protected["__join"]
+
+            if(self.__check("where") and statement == "where"):
+                sql = sql + " WHERE %s" % self.__protected["__condition"]
+
+            if(self.__check("order") and statement == "order"):
+                sql = sql + " ORDER BY %s" % self.__protected["__order"]
+
+            if(self.__check("limit") and statement == "limit"):
+                sql = sql + " LIMIT %s" % self.__protected["__limit"]
+
+            if(self.__check("group") and statement == "group"):
+                sql = sql + " GROUP BY %s" % self.__protected["__group"]
+
+            if(self.__check("having") and statement == "having"):
+                sql = sql + " HAVING %s" % self.__protected["__having"]
+
+            if(self.__check("data") and statement == "data:save"):
+                sets = ""
+                for data in self.__protected["__data"]:
+                    sets = sets + "%s = '%s', " % (data, self.__valuefix(self.__protected["__data"][data]))
+                
+                sets = sets.strip().rstrip(",")
+                sql = sql + " SET %s" % sets
+
+            if(self.__check("data") and statement == "data:add"):
+                sets = ""
+                values = ""
+                for data in self.__protected["__data"]:
+                    sets = sets + "%s, " % data
+                    values = values + "'%s', " % self.__valuefix(self.__protected["__data"][data])
+                
+                sets = sets.strip().rstrip(",")
+                values = values.strip().rstrip(",")
+                sql = sql + " (%s)" % sets
+                sql = sql + " VALUES (%s)" % values
+
+        return sql
 
     def prepend(self, name, value):
         self.__protected[do_dict[name]] = "%s AND %s" % (value, self.__protected[do_dict[name]])
@@ -229,78 +283,28 @@ class Query(object):
 
     def select(self, cheat = False):
         sql = "SELECT %s FROM %s" % (self.__protected["__field"], self.__protected["__table_name"])
-
-        if(self.__check("join")):
-            sql = sql + " %s" % self.__protected["__join"]
-
-        if(self.__check("where")):
-            sql = sql + " WHERE %s" % self.__protected["__condition"]
-
-        if(self.__check("order")):
-            sql = sql + " ORDER BY %s" % self.__protected["__order"]
-
-        if(self.__check("limit")):
-            sql = sql + " LIMIT %s" % self.__protected["__limit"]
-
-        if(self.__check("group")):
-            sql = sql + " GROUP BY %s" % self.__protected["__group"]
-
-        if(self.__check("having")):
-            sql = sql + " HAVING %s" % self.__protected["__having"]
-
+        sql = self.__sqlbuild(sql, ["join", "where", "order", "limit", "group", "having"])
         self.__close()
         sql = self.__sqlfix(sql)
         return self.db.query(sql) if not cheat else sql
 
     def delete(self, cheat = False):
         sql = "DELETE FROM %s" % self.__protected["__table_name"]
-
-        if(self.__check("where")):
-            sql = sql + " WHERE %s" % self.__protected["__condition"]
-
-        if(self.__check("order")):
-            sql = sql + " ORDER BY %s" % self.__protected["__order"]
-
-        if(self.__check("limit")):
-            sql = sql + " LIMIT %s" % self.__protected["__limit"]
-
+        sql = self.__sqlbuild(sql, ["where", "order", "limit"])
         self.__close()
         sql = self.__sqlfix(sql)
         return self.db.execute(sql) if not cheat else sql
 
     def save(self, cheat = False):
         sql = "UPDATE %s" % self.__protected["__table_name"]
-
-        if(self.__check("data")):
-            sets = ""
-            for data in self.__protected["__data"]:
-                sets = sets + "%s = '%s', " % (data, self.__valuefix(self.__protected["__data"][data]))
-            
-            sets = sets.strip().rstrip(",")
-            sql = sql + " SET %s" % sets
-
-        if(self.__check("where")):
-            sql = sql + " WHERE %s" % self.__protected["__condition"]
-        
+        sql = self.__sqlbuild(sql, ["data:save", "where"])
         self.__close()
         sql = self.__sqlfix(sql)
         return self.db.execute(sql) if not cheat else sql
 
     def add(self, cheat = False):
         sql = "INSERT INTO %s" % self.__protected["__table_name"]
-
-        if(self.__check("data")):
-            sets = ""
-            values = ""
-            for data in self.__protected["__data"]:
-                sets = sets + "%s, " % data
-                values = values + "'%s', " % self.__valuefix(self.__protected["__data"][data])
-            
-            sets = sets.strip().rstrip(",")
-            values = values.strip().rstrip(",")
-            sql = sql + " (%s)" % sets
-            sql = sql + " VALUES (%s)" % values
-
+        sql = self.__sqlbuild(sql, ["data:add"])
         self.__close()
         sql = self.__sqlfix(sql)
         return self.db.execute(sql) if not cheat else sql
