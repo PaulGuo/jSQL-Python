@@ -310,7 +310,6 @@ class Query(object):
         next_page = current_page + 1 if current_page < pages else pages
 
         result = {}
-        print("SQL EXECUTED FOR PAGE: %s" % self.grasp(sql).limit(start, end).select(True))
         result["list"] = self.grasp(sql).limit(start, end).select()
         result["page"] = {
             "prev": previous_page,
