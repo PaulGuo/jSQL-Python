@@ -315,7 +315,7 @@ class Query(object):
             values = ""
             for data in self.__protected["__data"]:
                 sets = sets + "%s, " % data
-                values = values + "'%s' , " % self.__valuefix(self.__protected["__data"][data])
+                values = values + "'%s', " % self.__valuefix(self.__protected["__data"][data])
             
             sets = sets.strip().rstrip(",")
             values = values.strip().rstrip(",")
