@@ -257,10 +257,9 @@ class Query(object):
 
     def count(self, cheat = False):
         sql = "SELECT COUNT(*) FROM %s" % self.__protected["__table_name"]
-        if(self.__check("where")):
-            sql = sql + " WHERE %s" % self.__protected["__condition"]
-        self.__close()
+        sql = self.__sqlbuild(sql, ["where"])
         sql = self.__sqlfix(sql)
+        self.__close()
         return self.db.get(sql)["COUNT(*)"] if not cheat else sql
 
     def find(self, cheat = False):
@@ -272,27 +271,27 @@ class Query(object):
     def select(self, cheat = False):
         sql = "SELECT %s FROM %s" % (self.__protected["__field"], self.__protected["__table_name"])
         sql = self.__sqlbuild(sql, ["join", "where", "order", "limit", "group", "having"])
-        self.__close()
         sql = self.__sqlfix(sql)
+        self.__close()
         return self.db.query(sql) if not cheat else sql
 
     def delete(self, cheat = False):
         sql = "DELETE FROM %s" % self.__protected["__table_name"]
         sql = self.__sqlbuild(sql, ["where", "order", "limit"])
-        self.__close()
         sql = self.__sqlfix(sql)
+        self.__close()
         return self.db.execute(sql) if not cheat else sql
 
     def save(self, cheat = False):
         sql = "UPDATE %s" % self.__protected["__table_name"]
         sql = self.__sqlbuild(sql, ["data:save", "where"])
-        self.__close()
         sql = self.__sqlfix(sql)
+        self.__close()
         return self.db.execute(sql) if not cheat else sql
 
     def add(self, cheat = False):
         sql = "INSERT INTO %s" % self.__protected["__table_name"]
         sql = self.__sqlbuild(sql, ["data:add"])
-        self.__close()
         sql = self.__sqlfix(sql)
+        self.__close()
         return self.db.execute(sql) if not cheat else sql
