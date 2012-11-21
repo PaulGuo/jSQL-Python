@@ -295,3 +295,29 @@ class Query(object):
         sql = self.__sqlfix(sql)
         self.__close()
         return self.db.execute(sql) if not cheat else sql
+
+    def pages(self, current_page = 1, list_rows = 40, cheat = False):
+        sql = self.select(cheat = True)
+        self.__close()
+        count = self.grasp(sql).count()
+        pages = count / list_rows
+        pages = pages + 1 if not count % list_rows == 0 else pages
+        if(current_page < 1): current_page = 1
+        if(current_page > pages): current_page = current_page
+        start = (current_page - 1) * list_rows
+        end = list_rows
+        previous_page = current_page - 1 if current_page > 1 else 1
+        next_page = current_page + 1 if current_page < pages else pages
+
+        result = {}
+        print("SQL EXECUTED FOR PAGE: %s" % self.grasp(sql).limit(start, end).select(True))
+        result["list"] = self.grasp(sql).limit(start, end).select()
+        result["page"] = {
+            "prev": previous_page,
+            "next": next_page,
+            "current": current_page,
+            "pages": pages,
+            "total": count,
+        }
+
+        return result
