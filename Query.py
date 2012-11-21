@@ -119,12 +119,6 @@ class Query(object):
         return self
 
     def query(self, sql):
-        if(self.__check("order")):
-            sql = sql + " ORDER BY %s" % self.__protected["__order"]
-
-        if(self.__check("limit")):
-            sql = sql + " LIMIT %s" % self.__protected["__limit"]
-
         self.__close()
         sql = self.__sqlfix(sql)
         return self.db.query(sql)
