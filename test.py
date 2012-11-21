@@ -1,13 +1,13 @@
 #!/usr/bin/env python
 # coding=utf-8
 
-import re
+from Query import *
 
 class Db(object):
     def __init__(self):
         self.get = self._get
         self.query = self._query
-        self.execute = self._execute 
+        self.execute = self._execute
 
     def _get(self, s):
         print('GET: %s' % s)
@@ -19,7 +19,9 @@ class Db(object):
         print('EXECUTE: %s' % s)
 
 if __name__ == '__main__':
-    q = Query('test_table')
+    db = Db()
+    q = Query('test_table', db)
+
     print('''Query wrapper for tornado's test case''')
 
     print q.find(cheat = True)
