@@ -45,6 +45,7 @@ class Query(object):
         return True if(name in self.__cluster) else False
 
     def __do(self, name, value):
+        value = value.strip() if type(value) == type('string') else value
         self.__protected[do_dict[name]] = value
         self.__tracker(name)
 
@@ -145,7 +146,7 @@ class Query(object):
         return self.db.query(sql)
 
     def grasp(self, sql):
-        select_regx = re.compile("SELECT (COUNT\()?(?P<field>[\w\*\s\.,]+)\)? FROM (?P<table_name>\w+)", re.I)
+        select_regx = re.compile("SELECT (COUNT\()?(?P<field>[\w\*\s\.,]+)\)? FROM (?P<table_name>.*?)(LIMIT|ORDER|GROUP|HAVING|WHERE|$)", re.I)
         where_complex_regx = re.compile("WHERE (?P<condition>.*?)(LIMIT|ORDER|GROUP|HAVING)", re.I)
         where_regx = re.compile("WHERE (?P<condition>.*)", re.I)
         limit_regx = re.compile("LIMIT (?P<start>\d+),?\s*(?P<end>\d+)?", re.I)
@@ -155,7 +156,7 @@ class Query(object):
         insert_regx = re.compile("INSERT INTO (?P<table_name>\w+) \(((\w+,?\s?)+)\) VALUES \((([\"']?\w+[\"']?,?\s?)+)\)", re.I)
         update_complex_regx = re.compile("UPDATE (?P<table_name>\w+) SET (.*?)(LIMIT|ORDER|GROUP|HAVING|WHERE)", re.I)
         update_regx = re.compile("UPDATE (?P<table_name>\w+) SET (.*)", re.I)
-        table_regx = re.compile("FROM (?P<table_name>\w+)", re.I)
+        table_regx = re.compile("FROM (?P<table_name>.*?)(LIMIT|ORDER|GROUP|HAVING|WHERE|$)", re.I)
         join_regx = re.compile("(?P<join_condition>(?P<join_dir>LEFT|RIGHT)?\s*(?P<join_type>INNER|OUTER) JOIN (?P<table_name>\w+) ON (.*?))(LIMIT|ORDER|GROUP|HAVING|WHERE)", re.I)
 
         select = select_regx.search(sql)

@@ -61,4 +61,11 @@ if __name__ == '__main__':
     print q.field('name, age').where('name LIKE "%tom%"').find(cheat = True)
     # print dir(q)
     print q._Query__valuefix('He\'s tom.')
+    print q.grasp('SELECT ArticleTitle, Copyright, ab.AuthID \
+        FROM Articles AS b, AuthorArticle AS ab \
+        WHERE b.ArticleID=ab.ArticleID AND Copyright<1980 \
+        ORDER BY ArticleTitle;').find(cheat = True)
+    print q.table('table_a, table_b AS b').field('name, age, sex').where('table_a.name = b.name').find(cheat = True)
+    print q.table('table_a AS a, table_b AS b').field('name, age, sex, id AS user_id').where('a.name = b.name').find(cheat = True)
+    print q.grasp('SELECT name, age, sex, id AS user_id FROM table_a AS a, table_b AS b WHERE a.name = b.name').find(cheat = True)
 
